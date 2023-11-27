@@ -1,11 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { colors } from '../utils/colors';
 import CustomText from './CustomText';
 import { metrics } from '../utils/metrics';
 import Icons from './CustomIcon';
 
-const Header = ({ tab, setTab }) => {
+const Header = ({ state, descriptors, navigation, position }) => {
   const titleArray = [
     {
       id: 0,
@@ -73,35 +73,73 @@ const Header = ({ tab, setTab }) => {
         </View>
       </View>
       <View style={styles.container}>
-        {titleArray.map((item, i) => (
-          <TouchableOpacity
-            activeOpacity={0.6}
-            onPress={() => setTab(i)}
-            style={[
-              styles.bottomBorder,
-              {
-                width: item.width,
-                borderBottomColor: tab == i ? colors.white : 'transparent',
-              },
-            ]}
-            key={item.id}>
-            {item.icon ? (
-              <Icons
-                family="MaterialIcons"
-                name="groups"
-                color={tab == i ? colors.white : colors.HEADER_TEXT}
-                size={metrics.width(35)}
-              />
-            ) : (
-              <CustomText
-                label={item.title}
-                color={tab == i ? colors.white : colors.HEADER_TEXT}
-                fontWeight="bold"
-                fontSize={18}
-              />
-            )}
-          </TouchableOpacity>
-        ))}
+        <View style={{ width: '15%', marginLeft: 10, }}>
+          <Icons
+            family="MaterialIcons"
+            name="groups"
+            color={colors.HEADER_TEXT}
+            size={metrics.width(35)}
+          />
+        </View>
+
+        {state.routes.map((route, index) => {
+          const { options } = descriptors[route.key];
+          const label =
+            options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+                ? options.title
+                : route.name;
+
+          const isFocused = state.index === index;
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name, route.params);
+            }
+          };
+
+          const onLongPress = () => {
+            navigation.emit({
+              type: 'tabLongPress',
+              target: route.key,
+            });
+          };
+          return (
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityState={isFocused ? { selected: true } : {}}
+              accessibilityLabel={options.tabBarAccessibilityLabel}
+              testID={options.tabBarTestID}
+              onPress={onPress}
+              onLongPress={onLongPress}
+              style={[
+                styles.bottomBorder,
+                {
+                  width: '27%',
+                  borderBottomColor: isFocused ? colors.white : 'transparent',
+                },
+              ]}
+            >
+              <Animated.View>
+                <CustomText
+                  label={label}
+                  fontWeight="bold"
+                  fontSize={18}
+                  color={isFocused ? colors.white : colors.HEADER_TEXT}
+
+                />
+              </Animated.View>
+            </TouchableOpacity>
+          )
+        })}
+
       </View>
     </View>
   );

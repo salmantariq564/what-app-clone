@@ -20,7 +20,7 @@ const windowHeight = Dimensions.get('window').height;
 const UserList: React.FC = () => {
   const [tab, setTab] = useState(1);
   return (
-    <View style={StyleSheet.mainContainer}>
+    <View style={styles.mainContainer}>
       <TouchableOpacity activeOpacity={0.6} style={styles.chatIcon}>
         <Icons
           family="MaterialIcons"
@@ -30,8 +30,6 @@ const UserList: React.FC = () => {
         />
       </TouchableOpacity>
       <StatusBar animated={true} backgroundColor={colors.HEADER_BACKGROUND} />
-      <Header tab={tab} setTab={setTab} />
-
       <FlatList
         data={userList}
         renderItem={({ item }) => <User chat={item} />}

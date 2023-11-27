@@ -13,6 +13,8 @@ const ChatScreen = ({ route, navigation }) => {
   const [massageArray, setMassageArray] = useState(massages);
   const [newMessage, setNewMessage] = useState(null);
 
+
+
   return (
     <KeyboardAvoidingView style={styles.bg}>
       <Image source={images.chatBg} style={styles.bg} />
